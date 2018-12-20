@@ -13,6 +13,7 @@
     let defaults = {
         prefix : '_ui',
         format : function (template,templateData){
+
             return template.replace(/{([^\}]+)}/g,function (v,p){
               return templateData.hasOwnProperty(p) ? templateData[p] : v || '';
             });
