@@ -13,7 +13,7 @@
     let defaults = {
         prefix : '_ui',
         format : function (template,templateData){
-            template.replace(/{([^\}]+)}/g,function (v,p){
+            return template.replace(/{([^\}]+)}/g,function (v,p){
               return templateData.hasOwnProperty(p) ? templateData[p] : v || '';
             });
         }
@@ -26,9 +26,12 @@
                 throw new TypeError('el parameter cannot be empty.');
             }
             this.isDisable = false;
-            this.el = this.el instanceof $ ? this.el[0] : this.el instanceof Object ? this.el : document.querySelector(this.el);
+            this.el = this.el instanceof Object ? this.el : document.querySelector(this.el);
             this.template = this.settings.template || '';
             this.uid = defaults.prefix + new Date().getTime();
+            if (this.template && !/^<[^>]+(uid=)[^>]+>/.test(this.template)) {
+                this.template = this.template.replace('>', ' uid="' + this.uid + '">');
+            }
             this.templateData = {uid:this.uid};
         }
         render() {
@@ -81,7 +84,31 @@
         }
     }
 
-    return {
+    class TextArea extends Input{
+        constructor(opt = {}) {
+            opt.template = opt.template || `<textarea class="uiTextAreaBox{class}" placeholder="placeholder" value="{value}"></textarea>`;
+            super(opt);
+        }
+    }
 
+    class Select extends UI{
+        constructor(opt = {}) {
+            opt.template = opt.template || `<div class="ptf_seaSelectM"{css}>
+									<div class="ptf_haveSelM">
+										<span>{defaultText}</span>
+										<em></em>
+									</div>
+									<div class="ptf_priceSel dis overflow_y">
+										<ul{listCss}>{list}</ul>
+									</div>
+								</div>`;
+            super(opt);
+        }
+    }
+
+    return {
+        Input       : Input,
+        TextArea    : TextArea,
+        Select      : Select
     }
 }));
